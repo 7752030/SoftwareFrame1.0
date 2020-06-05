@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_FormWhite.cshtml";
+}
+
+<div class="wrapper animated fadeInRight">
+    <form id="form" class="form-horizontal m">
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">编号<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="billNo" col="BillNo" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">操作员<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="operatorId" col="OperatorId" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">任务单编码<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="taskOrderId" col="TaskOrderId" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">操作时间<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="opTime" col="OpTime" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">任务单编号<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="taskOrderNo" col="TaskOrderNo" type="text" class="form-control" />
+            </div>
+            <label class="col-sm-2 control-label ">备注<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="mark" col="Mark" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label ">执行操作<font class="red"> *</font></label>
+            <div class="col-sm-4">
+                <input id="opAction" col="OpAction" type="text" class="form-control" />
+            </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var id = ys.request("id");
+    $(function () {
+        getForm();
+
+        $('#form').validate({
+            rules: {
+                billNo: { required: true }
+            }
+        });
+    });
+
+    function getForm() {
+        if (id > 0) {
+            ys.ajax({
+                url: '@Url.Content("~/TaskOrder/Record/GetFormJson")' + '?id=' + id,
+                type: 'get',
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        $('#form').setWebControls(obj.Result);
+                    }
+                }
+            });
+        }
+        else {
+            var defaultData = {};
+            $('#form').setWebControls(defaultData);
+        }
+    }
+
+    function saveForm(index) {
+        if ($('#form').validate().form()) {
+            var postData = $('#form').getWebControls({ Id: id });
+            ys.ajax({
+                url: '@Url.Content("~/TaskOrder/Record/SaveFormJson")',
+                type: 'post',
+                data: postData,
+                success: function (obj) {
+                    if (obj.Tag == 1) {
+                        ys.msgSuccess(obj.Message);
+                        parent.searchGrid();
+                        parent.layer.close(index);
+                    }
+                    else {
+                        ys.msgError(obj.Message);
+                    }
+                }
+            });
+        }
+    }
+</script>
+
